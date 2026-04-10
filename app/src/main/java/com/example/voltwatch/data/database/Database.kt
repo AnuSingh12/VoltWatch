@@ -11,11 +11,11 @@ import com.example.voltwatch.data.database.history.BatteryData
     entities = [
         BatteryData::class
     ],
-    version = 1
+    version = 3
 )
 abstract class AppDatabase : RoomDatabase() {
 
-    abstract fun historyDao(): BatteryDao
+    abstract fun batteryDao(): BatteryDao
 
     companion object {
         @Volatile

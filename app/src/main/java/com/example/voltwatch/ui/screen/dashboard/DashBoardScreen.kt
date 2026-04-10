@@ -2,14 +2,26 @@ package com.example.voltwatch.ui.screen.dashboard
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -17,58 +29,116 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.voltwatch.data.battery.BatteryReceiver
 import com.example.voltwatch.data.database.AppDatabase
 import com.example.voltwatch.data.repository.BatteryRepository
-import com.example.voltwatch.ui.component.BatteryCard
-
+import com.example.voltwatch.ui.component.BatteryCircle
+import com.example.voltwatch.ui.component.InfoCard
 
 @Composable
-fun DashBoardScreen() {
-
+fun DashBoardScreen(
+    onNextScreen: () -> Unit
+) {
     val context = LocalContext.current
     val database = AppDatabase.getDatabase(context)
     val repository = BatteryRepository(
-        batteryDao = database.historyDao()
+        batteryDao = database.batteryDao()
     )
     val viewmodel: DashBoardViewModel = viewModel(
         factory = DashBoardViewModelFactory(repository)
     )
-
     val batteryData by viewmodel.batteryInfo.collectAsState()
-    val latestData by viewmodel.latestBattery.collectAsState(initial = null)
+    var sliderValue by remember { mutableStateOf(20f) }
 
     DisposableEffect(Unit) {
 
-        val receiver = BatteryReceiver(context)
-
-        val broadcast = receiver.register { data ->
-
+        val receiver = BatteryReceiver()
+        val broadcast = receiver.register(context) { data ->
             viewmodel.updateBattery(data)
-
+            //insert for testing
             viewmodel.insertBattery(data)
         }
-
         onDispose {
             context.unregisterReceiver(broadcast)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        val saved = viewmodel.getTarget(context)
+        if (saved != -1) {
+            sliderValue = saved.toFloat()
         }
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-
         Text(
-            text = "⚡ VoltWatch Dashboard",
-            style = MaterialTheme.typography.headlineSmall
+            text = "VoltWatch",
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         )
+        Spacer(modifier = Modifier.height(10.dp))
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-        // 🔴 LIVE DATA CARD
-        BatteryCard(title = "Live Battery", data = batteryData)
+            BatteryCircle(data = batteryData)
 
-        // 🟢 LATEST STORED DATA
-        latestData?.let {
-            BatteryCard(title = "Last Saved", data = it)
+            InfoCard("Temperature", "${batteryData.temperature} °C")
+            InfoCard("Voltage", "${batteryData.voltage} mV")
+            InfoCard("Technology", batteryData.technology)
+        }
+
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Slider(
+                value = sliderValue,
+                onValueChange = { sliderValue = it },
+                valueRange = 0f..100f,
+                steps = 4
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                listOf(0, 20, 40, 60, 80, 100).forEach {
+                    Text("$it")
+                }
+            }
+            Text(
+                text = "Alert: ${sliderValue.toInt()}%",
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Button(
+                onClick = {
+                    viewmodel.saveTarget(context, sliderValue.toInt())
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                    contentColor = MaterialTheme.colorScheme.error
+                ),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Save Alert")
+            }
+
+            Button(
+                onClick = {
+                    onNextScreen()
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                    contentColor = MaterialTheme.colorScheme.error
+                ),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("View History")
+            }
         }
     }
 

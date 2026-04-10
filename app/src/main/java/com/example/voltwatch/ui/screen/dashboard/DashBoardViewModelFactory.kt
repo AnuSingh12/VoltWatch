@@ -3,7 +3,6 @@ package com.example.voltwatch.ui.screen.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.voltwatch.data.repository.BatteryRepository
-import kotlin.jvm.java
 
 class DashBoardViewModelFactory(
     private val dashRepo: BatteryRepository
