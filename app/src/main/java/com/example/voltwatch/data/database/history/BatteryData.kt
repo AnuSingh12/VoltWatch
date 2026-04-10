@@ -4,17 +4,14 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "battery_history")
-data class BatteryHistoryData(
+data class BatteryData(
 
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-
     val percentage: Int,
     val temperature: Float,
     val voltage: Int,
-
     val technology: String,
     val isCharging: Boolean,
-
     val timestamp: Long
 )

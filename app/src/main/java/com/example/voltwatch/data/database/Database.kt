@@ -1,21 +1,22 @@
 package com.example.voltwatch.data.database
 
+import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import android.content.Context
-import com.example.voltwatch.data.database.history.BatteryHistoryData
-import com.example.voltwatch.data.database.history.HistoryDao
+import com.example.voltwatch.data.database.history.BatteryDao
+import com.example.voltwatch.data.database.history.BatteryData
 
 @Database(
     entities = [
-        BatteryHistoryData::class
+        BatteryData::class
     ],
     version = 1
 )
 abstract class AppDatabase : RoomDatabase() {
 
-    abstract fun historyDao(): HistoryDao
+    abstract fun historyDao(): BatteryDao
+
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
