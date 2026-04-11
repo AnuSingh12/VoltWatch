@@ -46,4 +46,7 @@ class DashBoardViewModel(private val repository: BatteryRepository) : ViewModel(
             repository.insert(data)
         }
     }
+
+
+
 }

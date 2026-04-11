@@ -15,8 +15,4 @@ class BatteryRepository(
     fun getAllHistory(): Flow<List<BatteryData>> {
         return batteryDao.getAllHistory()
     }
-
-    fun getLatestBattery(): Flow<BatteryData?> {
-        return batteryDao.getLatestBattery()
-    }
 }
