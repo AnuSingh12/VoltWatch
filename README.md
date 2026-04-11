@@ -2,12 +2,12 @@
 
 A modern Android application that provides real-time battery insights, intelligent alerts, and background tracking — built with clean architecture and system-level APIs.
 
-# Overview
+## Overview
 
 VoltWatch is designed to help users monitor their device’s battery health with precision.
 It combines real-time system data, background processing, and user-defined alerts to deliver a reliable and efficient battery monitoring experience.
 
-# Key Features
+## Key Features
 
 1.Real-Time Battery Dashboard
 
@@ -35,7 +35,7 @@ It combines real-time system data, background processing, and user-defined alert
 * Triggers a subtle vibration (300ms)
 * Ensures feedback only on actual plug-in events
 
-# Architecture & Design
+## Architecture & Design
 
 This project strictly follows **MVVM architecture** with a clean and scalable structure.
 
@@ -54,7 +54,7 @@ Room Database + System Services
 * Lifecycle-aware components
 * Clean, maintainable folder structure
 
-# Tech Stack
+## Tech Stack
 
 Kotlin                            
 Jetpack Compose (Material 3)      
@@ -65,22 +65,22 @@ WorkManager
 BatteryManager, BroadcastReceiver 
 NotificationManager               
 
-# Background Logging
+## Background Logging
 
 * WorkManager runs every 15 minutes
 * Saves battery data to Room DB
 
-# Alert Trigger
+## Alert Trigger
 
 * Compares current battery with saved target
 * Fires notification at exact match
 
-# Charging Detection
+## Charging Detection
 
 * Tracks state transition (Not Charging → Charging)
 * Avoids false triggers on screen navigation
 
-# Final Thoughts
+## Final Thoughts
 
 VoltWatch is built with a strong focus on:
 
