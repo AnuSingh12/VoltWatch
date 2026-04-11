@@ -43,11 +43,9 @@ class BatteryWorkManger(
             AlertPreference.resetTriggered(context)
         }
 
-        if (target != -1 && data.percentage <= target && !isTriggered) {
-            if (data.percentage >= target - 1) {
-                NotificationHelper.showNotification(context, data.percentage)
-                AlertPreference.setTriggered(context)
-            }
+        if (target != -1 && data.percentage == target && !isTriggered) {
+            NotificationHelper.showNotification(context, data.percentage)
+            AlertPreference.setTriggered(context)
         }
 
         repository.insert(data)
