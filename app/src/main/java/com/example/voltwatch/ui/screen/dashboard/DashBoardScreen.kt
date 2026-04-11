@@ -1,5 +1,6 @@
 package com.example.voltwatch.ui.screen.dashboard
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +35,7 @@ import com.example.voltwatch.data.repository.BatteryRepository
 import com.example.voltwatch.ui.component.BatteryCircle
 import com.example.voltwatch.ui.component.InfoCard
 
+private const val TAG = "dashboard_screen"
 @Composable
 fun DashBoardScreen(
     onNextScreen: () -> Unit
@@ -46,14 +50,13 @@ fun DashBoardScreen(
     )
     val batteryData by viewmodel.batteryInfo.collectAsState()
     var sliderValue by remember { mutableStateOf(20f) }
+    val scroll = rememberScrollState()
 
     DisposableEffect(Unit) {
 
         val receiver = BatteryReceiver()
         val broadcast = receiver.register(context) { data ->
             viewmodel.updateBattery(data)
-            //insert for testing
-            viewmodel.insertBattery(data)
         }
         onDispose {
             context.unregisterReceiver(broadcast)
@@ -70,7 +73,8 @@ fun DashBoardScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(scroll),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
@@ -117,6 +121,7 @@ fun DashBoardScreen(
             Button(
                 onClick = {
                     viewmodel.saveTarget(context, sliderValue.toInt())
+                    Log.d(TAG, "Saved Target: ${sliderValue.toInt()}")
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.errorContainer,

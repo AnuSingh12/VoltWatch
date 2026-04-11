@@ -37,16 +37,4 @@ class DashBoardViewModel(private val repository: BatteryRepository) : ViewModel(
     fun getTarget(context: Context): Int {
         return AlertPreference.getTarget(context)
     }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // for testing
-    ///////////////////////////////////////////////////////////////////////////
-    fun insertBattery(data: BatteryData) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.insert(data)
-        }
-    }
-
-
-
 }
